@@ -2314,17 +2314,37 @@ Type ClangImporter::Implementation::importMethodType(
         (paramIndex == params.size() - 2 &&
          errorInfo && errorInfo->ParamIndex == params.size() - 1);
       
-      auto defaultArg = inferDefaultArgument(getClangPreprocessor(),
-                                             param->getType(),
-                                             optionalityOfParam,
-                                             methodName.getBaseName(),
-                                             numEffectiveParams,
-                                             name.empty() ? StringRef()
-                                                          : name.str(),
-                                             paramIndex == 0,
-                                             isLastParameter);
-      if (defaultArg != DefaultArgumentKind::None)
-        paramInfo->setDefaultArgumentKind(defaultArg);
+      auto bridgeAttr = clangDecl->getAttr<clang::SwiftBridgeAttr>();
+      if (auto defaultAttr = param->getAttr<clang::SwiftDefaultAttr>()) {
+        /*
+           paramInfo->setDefaultArgumentKind(DefaultArgumentKind::Normal);
+        paramInfo->setDefaultValue(ExprHandle::get(SwiftContext, defaultAttr->getExpr()));
+        */
+
+        switch (defaultAttr->getKind()) {
+          case clang::SwiftDefaultAttr::Kind::Nil:
+            paramInfo->setDefaultArgumentKind(DefaultArgumentKind::Nil);
+            break;
+          case clang::SwiftDefaultAttr::Kind::EmptyArray:
+            paramInfo->setDefaultArgumentKind(DefaultArgumentKind::EmptyArray);
+            break;
+          case clang::SwiftDefaultAttr::Kind::EmptyDictionary:
+            paramInfo->setDefaultArgumentKind(DefaultArgumentKind::EmptyDictionary);
+            break;
+        }
+      } else {
+        auto defaultArg = inferDefaultArgument(getClangPreprocessor(),
+                                               param->getType(),
+                                               optionalityOfParam,
+                                               methodName.getBaseName(),
+                                               numEffectiveParams,
+                                               name.empty() ? StringRef()
+                                                            : name.str(),
+                                               paramIndex == 0,
+                                               isLastParameter);
+        if (defaultArg != DefaultArgumentKind::None)
+          paramInfo->setDefaultArgumentKind(defaultArg);
+      }
     }
     swiftParams.push_back(paramInfo);
   }
