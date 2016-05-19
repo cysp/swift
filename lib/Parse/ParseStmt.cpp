@@ -1712,7 +1712,8 @@ Parser::evaluateConditionalCompilationExpr(Expr *condition) {
         !fnName.equals("_endian") &&
         !fnName.equals("_runtime") &&
         !fnName.equals("swift") &&
-        !fnName.equals("_compiler_version")) {
+        !fnName.equals("_compiler_version") &&
+        !fnName.equals("canImport")) {
       diagnose(CE->getLoc(), diag::unsupported_platform_condition_expression);
       return ConditionalCompilationExprState::error();
     }
@@ -1774,6 +1775,21 @@ Parser::evaluateConditionalCompilationExpr(Expr *condition) {
       auto VersionNewEnough = thisVersion >= versionRequirement.getValue();
       return {VersionNewEnough,
               ConditionalCompilationExprKind::LanguageVersion};
+    } else if (fnName.equals("canImport")) {
+      if (auto UDRE = dyn_cast<UnresolvedDeclRefExpr>(PE->getSubExpr())) {
+        // The sub expression should be an UnresolvedDeclRefExpr (we won't
+        // tolerate extra parens).
+        auto argument = UDRE->getName().getBaseName().str();
+        (void)argument;
+
+        auto canImport = Context.canLoadModuleByName(argument);
+
+        return {canImport,
+                ConditionalCompilationExprKind::Boolean};
+      }
+      diagnose(CE->getLoc(), diag::unsupported_platform_condition_argument,
+               "identifier");
+      return ConditionalCompilationExprState::error();
     } else {
       if (auto UDRE = dyn_cast<UnresolvedDeclRefExpr>(PE->getSubExpr())) {
         // The sub expression should be an UnresolvedDeclRefExpr (we won't

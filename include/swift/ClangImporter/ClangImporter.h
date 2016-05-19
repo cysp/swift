@@ -111,6 +111,11 @@ public:
                         ArrayRef<std::pair<Identifier, SourceLoc>> path)
                       override;
 
+  virtual bool canLoadModule(
+                        SourceLoc importLoc,
+                        ArrayRef<std::pair<Identifier, SourceLoc>> path)
+                      override;
+
   /// \brief Look for declarations associated with the given name.
   ///
   /// \param name The name we're searching for.

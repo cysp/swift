@@ -61,6 +61,10 @@ public:
   loadModule(SourceLoc importLoc,
              ArrayRef<std::pair<Identifier, SourceLoc>> path) override;
 
+  virtual bool
+  canLoadModule(SourceLoc importLoc,
+                ArrayRef<std::pair<Identifier, SourceLoc>> path) override;
+
   /// Attempt to load a serialized AST into the given module.
   ///
   /// If the AST cannot be loaded and \p diagLoc is present, a diagnostic is

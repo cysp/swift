@@ -70,6 +70,20 @@ class SkipNonTransparentFunctions : public DelayedParsingCallbacks {
 
 } // unnamed namespace
 
+bool SourceLoader::canLoadModule(SourceLoc importLoc,
+                             ArrayRef<std::pair<Identifier, SourceLoc>> path) {
+  // FIXME: Swift submodules?
+  if (path.size() > 1)
+    return false;
+
+  auto moduleID = path[0];
+
+  FileOrError inputFileOrError = findModule(Ctx, moduleID.first.str(),
+                                            moduleID.second);
+
+  return !!inputFileOrError;
+}
+
 Module *SourceLoader::loadModule(SourceLoc importLoc,
                              ArrayRef<std::pair<Identifier, SourceLoc>> path) {
   // FIXME: Swift submodules?

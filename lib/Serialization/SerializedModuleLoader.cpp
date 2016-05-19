@@ -353,6 +353,38 @@ FileUnit *SerializedModuleLoader::loadAST(
   return nullptr;
 }
 
+bool SerializedModuleLoader::canLoadModule(SourceLoc importLoc,
+                                           Module::AccessPathTy path) {
+  // FIXME: Swift submodules?
+  if (path.size() > 1)
+    return false;
+
+  auto moduleID = path[0];
+  bool isFramework = false;
+
+  std::unique_ptr<llvm::MemoryBuffer> moduleInputBuffer;
+  std::unique_ptr<llvm::MemoryBuffer> moduleDocInputBuffer;
+  // First see if we find it in the registered memory buffers.
+  if (!MemoryBuffers.empty()) {
+    // FIXME: Right now this works only with access paths of length 1.
+    // Once submodules are designed, this needs to support suffix
+    // matching and a search path.
+    auto bufIter = MemoryBuffers.find(moduleID.first.str());
+    if (bufIter != MemoryBuffers.end()) {
+      return true;
+    }
+  }
+
+  // Otherwise look on disk.
+  if (!findModule(Ctx, moduleID, moduleInputBuffer,
+                                       moduleDocInputBuffer,
+                                       isFramework)) {
+    return true;
+  }
+
+  return false;
+}
+
 Module *SerializedModuleLoader::loadModule(SourceLoc importLoc,
                                            Module::AccessPathTy path) {
   // FIXME: Swift submodules?

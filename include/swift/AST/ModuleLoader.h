@@ -86,6 +86,10 @@ public:
   ModuleDecl *loadModule(SourceLoc importLoc,
                          ArrayRef<std::pair<Identifier, SourceLoc>> path) = 0;
 
+  virtual
+  bool canLoadModule(SourceLoc importLoc,
+                     ArrayRef<std::pair<Identifier, SourceLoc>> path) = 0;
+
   /// \brief Load extensions to the given nominal type.
   ///
   /// \param nominal The nominal type whose extensions should be loaded.

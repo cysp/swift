@@ -61,6 +61,10 @@ public:
   loadModule(SourceLoc importLoc,
              ArrayRef<std::pair<Identifier, SourceLoc>> path) override;
 
+  virtual bool
+  canLoadModule(SourceLoc importLoc,
+                ArrayRef<std::pair<Identifier, SourceLoc>> path) override;
+
   /// \brief Load extensions to the given nominal type.
   ///
   /// \param nominal The nominal type whose extensions should be loaded.

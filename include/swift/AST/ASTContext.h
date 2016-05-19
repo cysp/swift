@@ -659,6 +659,9 @@ public:
 
   ModuleDecl *getModuleByName(StringRef ModuleName);
 
+  bool canLoadModule(ArrayRef<std::pair<Identifier, SourceLoc>> ModulePath);
+  bool canLoadModuleByName(StringRef ModuleName);
+
   /// Returns the standard library module, or null if the library isn't present.
   ///
   /// If \p loadIfAbsent is true, the ASTContext will attempt to load the module

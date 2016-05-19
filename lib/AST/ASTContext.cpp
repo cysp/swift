@@ -1302,6 +1302,35 @@ void ASTContext::setArchetypeBuilder(CanGenericSignature sig,
   }
 }
 
+bool
+ASTContext::canLoadModule(ArrayRef<std::pair<Identifier, SourceLoc>> ModulePath) {
+  assert(!ModulePath.empty());
+
+  if (getLoadedModule(ModulePath))
+    return true;
+
+  auto moduleID = ModulePath[0];
+  for (auto &importer : Impl.ModuleLoaders) {
+    if (importer->canLoadModule(moduleID.second, ModulePath)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool
+ASTContext::canLoadModuleByName(StringRef ModuleName) {
+  SmallVector<std::pair<Identifier, SourceLoc>, 4>
+  AccessPath;
+  while (!ModuleName.empty()) {
+    StringRef SubModuleName;
+    std::tie(SubModuleName, ModuleName) = ModuleName.split('.');
+    AccessPath.push_back({ getIdentifier(SubModuleName), SourceLoc() });
+  }
+  return canLoadModule(AccessPath);
+}
+
 Module *
 ASTContext::getModule(ArrayRef<std::pair<Identifier, SourceLoc>> ModulePath) {
   assert(!ModulePath.empty());
