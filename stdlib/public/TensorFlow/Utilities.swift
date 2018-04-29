@@ -248,8 +248,8 @@ public struct RandomNumberSequence : Sequence {
   }
 
   public func makeIterator() -> AnyIterator<Int32> {
+    let state = self.seed.flatMap(RandomState.init) ?? .global
     return AnyIterator {
-      let state = self.seed.flatMap(RandomState.init) ?? .global
       return state.generate()
     }
   }
