@@ -936,6 +936,12 @@ bool ModelASTWalker::walkToDeclPre(Decl *D) {
                                             AssociatedTypeD->getSourceRange());
     SN.NameRange = CharSourceRange(AssociatedTypeD->getNameLoc(),
                                    AssociatedTypeD->getName().getLength());
+    for (const TypeLoc &TL : AssociatedTypeD->getInherited()) {
+      CharSourceRange TR = charSourceRangeFromSourceRange(SM,
+                                                          TL.getSourceRange());
+      SN.InheritedTypeRanges.push_back(TR);
+      SN.Elements.emplace_back(SyntaxStructureElementKind::TypeRef, TR);
+    }
     pushStructureNode(SN, AssociatedTypeD);
   } else if (auto *GenericParamD = dyn_cast<GenericTypeParamDecl>(D)) {
     SyntaxStructureNode SN;

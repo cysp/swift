@@ -242,7 +242,7 @@ protocol FooProtocol {
   associatedtype Bar
   // CHECK:  <associatedtype>associatedtype <name>Bar</name></associatedtype>
   associatedtype Baz: Equatable
-  // CHECK:  <associatedtype>associatedtype <name>Baz</name>: Equatable</associatedtype>
+  // CHECK:  <associatedtype>associatedtype <name>Baz</name>: <inherited><elem-typeref>Equatable</elem-typeref></inherited></associatedtype>
   associatedtype Qux where Qux: Equatable
   // CHECK:  <associatedtype>associatedtype <name>Qux</name> where Qux: Equatable</associatedtype>
 }

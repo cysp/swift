@@ -1068,7 +1068,19 @@
           key.offset: 1604,
           key.length: 29,
           key.nameoffset: 1619,
-          key.namelength: 3
+          key.namelength: 3,
+          key.inheritedtypes: [
+            {
+              key.name: "Equatable"
+            }
+          ],
+          key.elements: [
+            {
+              key.kind: source.lang.swift.structure.elem.typeref,
+              key.offset: 1624,
+              key.length: 9
+            }
+          ]
         }
       ]
     },
